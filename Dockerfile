@@ -35,6 +35,25 @@ COPY --from=builder --chown=nodeuser:nodejs /usr/src/app .
 # Create logs directory with proper permissions
 RUN mkdir -p logs && chown -R nodeuser:nodejs logs
 
+# Set environment variables (replace with your actual values)
+ENV NODE_ENV=development
+ENV PORT=3000
+ENV API_VERSION=v1
+ENV DB_NAME=iot_tracking
+
+# Production credentials hardcoded:
+ENV MONGODB_URI="mongodb+srv://ajay123:ajay123@transactions.puvlf.mongodb.net/iot_tracking"
+ENV JWT_SECRET="change_this_to_a_very_secure_random_string_32_chars_min"
+ENV API_KEY="change_this_secure_api_key_too"
+
+# Optional settings
+ENV JWT_EXPIRES_IN=7d
+ENV RATE_LIMIT_WINDOW_MS=900000
+ENV RATE_LIMIT_MAX_REQUESTS=100
+ENV ALERT_RATE_LIMIT_MAX=10
+ENV LOG_LEVEL=info
+ENV ALLOWED_ORIGINS="*"
+
 # Switch to non-root user
 USER nodeuser
 
