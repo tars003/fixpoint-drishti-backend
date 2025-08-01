@@ -5,8 +5,7 @@ const deviceSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Device ID is required'],
     unique: true,
-    trim: true,
-    index: true
+    trim: true
   },
   name: {
     type: String,
@@ -19,13 +18,11 @@ const deviceSchema = new mongoose.Schema({
   },
   isActive: {
     type: Boolean,
-    default: true,
-    index: true
+    default: true
   },
   lastSeen: {
     type: Date,
-    default: Date.now,
-    index: true
+    default: Date.now
   },
   batteryThreshold: {
     type: Number,
@@ -62,18 +59,6 @@ const deviceSchema = new mongoose.Schema({
     enabled: {
       type: Boolean,
       default: false
-    },
-    center: {
-      type: {
-        type: String,
-        enum: ['Point'],
-        default: 'Point'
-      },
-      coordinates: [Number] // [longitude, latitude]
-    },
-    radius: {
-      type: Number,
-      min: [1, 'Geofence radius must be at least 1 meter']
     }
   }
 }, {
@@ -83,10 +68,9 @@ const deviceSchema = new mongoose.Schema({
 });
 
 // Indexes for performance
-deviceSchema.index({ deviceId: 1 });
+// Note: deviceId index is automatically created by unique: true constraint
 deviceSchema.index({ isActive: 1 });
 deviceSchema.index({ lastSeen: -1 });
-deviceSchema.index({ 'geofence.center': '2dsphere' });
 
 // Virtual for device status based on last seen
 deviceSchema.virtual('status').get(function() {

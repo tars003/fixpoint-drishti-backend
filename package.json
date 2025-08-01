@@ -12,9 +12,7 @@
     "test-api": "node scripts/test-api.js",
     "docker:build": "docker build -t iot-tracking-server .",
     "docker:run": "docker run -p 3000:3000 --env-file .env iot-tracking-server",
-    "docker:compose": "docker-compose up -d --build",
-    "docker:down": "docker-compose down",
-    "logs": "docker-compose logs -f iot-server",
+
     "lint": "echo 'Add ESLint configuration if needed'",
     "format": "echo 'Add Prettier configuration if needed'"
   },
@@ -28,8 +26,7 @@
     "helmet": "^7.1.0",
     "cors": "^2.8.5",
     "express-rate-limit": "^7.2.0",
-    "rate-limit-redis": "^4.2.0",
-    "redis": "^4.6.13",
+
     "dotenv": "^16.4.5",
     "winston": "^3.13.0",
     "compression": "^1.7.4",

@@ -99,15 +99,7 @@ const errorHandler = (err, req, res, next) => {
     }
   }
   
-  // Redis Connection Errors
-  else if (err.code === 'ECONNREFUSED' && err.port === 6379) {
-    statusCode = 503;
-    message = 'Cache service unavailable';
-    
-    if (process.env.NODE_ENV !== 'production') {
-      message = 'Redis connection failed';
-    }
-  }
+
   
   // Rate Limit Errors
   else if (err.status === 429) {

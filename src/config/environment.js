@@ -10,8 +10,7 @@ const config = {
   MONGODB_URI: process.env.MONGODB_URI,
   DB_NAME: process.env.DB_NAME || 'iot_tracking',
   
-  // Redis
-  REDIS_URL: process.env.REDIS_URL || 'redis://localhost:6379',
+
   
   // Authentication
   JWT_SECRET: process.env.JWT_SECRET,

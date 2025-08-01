@@ -94,6 +94,6 @@ temp/
 .prettierrc*
 nodemon.json
 
-# Package lock files (using npm ci instead)
-package-lock.json
+# Package lock files
+# package-lock.json  # Keep this for npm ci
 yarn.lock

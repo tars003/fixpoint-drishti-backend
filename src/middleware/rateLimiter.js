@@ -1,58 +1,12 @@
 const rateLimit = require('express-rate-limit');
 const slowDown = require('express-slow-down');
-const RedisStore = require('rate-limit-redis');
-const redis = require('redis');
 const logger = require('../utils/logger');
 
-let redisClient;
-
-// Initialize Redis client with error handling
-const initializeRedis = async () => {
-  try {
-    redisClient = redis.createClient({
-      url: process.env.REDIS_URL || 'redis://localhost:6379',
-      retry_strategy: (options) => {
-        if (options.error && options.error.code === 'ECONNREFUSED') {
-          logger.warn('Redis server connection refused');
-          return new Error('Redis server connection refused');
-        }
-        if (options.total_retry_time > 1000 * 60 * 60) {
-          logger.error('Redis retry time exhausted');
-          return new Error('Retry time exhausted');
-        }
-        if (options.attempt > 10) {
-          logger.error('Max Redis connection attempts reached');
-          return undefined;
-        }
-        return Math.min(options.attempt * 100, 3000);
-      }
-    });
-
-    redisClient.on('error', (err) => {
-      logger.warn('Redis client error:', err.message);
-    });
-
-    redisClient.on('connect', () => {
-      logger.info('Redis client connected');
-    });
-
-    redisClient.on('disconnect', () => {
-      logger.warn('Redis client disconnected');
-    });
-
-    await redisClient.connect();
-    logger.info('Redis connection established for rate limiting');
-  } catch (error) {
-    logger.warn('Redis not available, using memory store for rate limiting:', error.message);
-    redisClient = null;
-  }
-};
-
-// Initialize Redis on module load
-initializeRedis();
+// Log that we're using in-memory store for rate limiting
+logger.info('Using in-memory store for rate limiting (Redis disabled)');
 
 /**
- * Creates a rate limiter with optional Redis store
+ * Creates a rate limiter with in-memory store
  * @param {number} windowMs - Time window in milliseconds
  * @param {number} max - Maximum requests per window
  * @param {string} message - Error message for rate limit exceeded
@@ -89,19 +43,9 @@ const createRateLimiter = (windowMs, max, message, options = {}) => {
       
       res.status(429).json(config.message);
     },
+    // Using default in-memory store (no Redis)
     ...options
   };
-  
-  // Use Redis store if available
-  if (redisClient && redisClient.isOpen) {
-    try {
-      config.store = new RedisStore({
-        sendCommand: (...args) => redisClient.sendCommand(args),
-      });
-    } catch (error) {
-      logger.warn('Failed to create Redis store for rate limiting, using memory store');
-    }
-  }
   
   return rateLimit(config);
 };
@@ -160,18 +104,11 @@ const strictRateLimit = createRateLimiter(
 const speedLimiter = slowDown({
   windowMs: 15 * 60 * 1000, // 15 minutes
   delayAfter: 50, // Allow 50 requests per 15 minutes at full speed
-  delayMs: 500, // Add 500ms delay per request above 50
+  delayMs: () => 500, // Add 500ms delay per request above 50 (updated for v2)
   maxDelayMs: 20000, // Maximum delay of 20 seconds per request
   skipFailedRequests: false,
   skipSuccessfulRequests: false,
-  onLimitReached: (req, res, options) => {
-    logger.warn('Speed limit reached', {
-      ip: req.ip,
-      userAgent: req.get('User-Agent'),
-      url: req.url,
-      method: req.method
-    });
-  }
+  validate: { delayMs: false } // Disable validation warning
 });
 
 // Dynamic rate limiter based on request type
@@ -192,23 +129,16 @@ const dynamicRateLimit = (req, res, next) => {
 };
 
 // Helper function to reset rate limit for a specific key
+// Note: In-memory store doesn't support manual reset, resets automatically on window expire
 const resetRateLimit = async (key) => {
-  if (redisClient && redisClient.isOpen) {
-    try {
-      await redisClient.del(`rl:${key}`);
-      logger.info(`Rate limit reset for key: ${key}`);
-      return true;
-    } catch (error) {
-      logger.error('Error resetting rate limit:', error);
-      return false;
-    }
-  }
+  logger.warn(`Rate limit reset requested for key: ${key}, but in-memory store doesn't support manual reset`);
   return false;
 };
 
 // Middleware to log rate limit info
 const rateLimitLogger = (req, res, next) => {
   const originalSend = res.send;
+  const originalEnd = res.end;
   
   res.send = function(data) {
     if (res.statusCode === 429) {
@@ -227,16 +157,28 @@ const rateLimitLogger = (req, res, next) => {
     
     originalSend.call(this, data);
   };
+
+  // Also log speed limit delays
+  res.end = function(chunk, encoding) {
+    if (res.get('Retry-After')) {
+      logger.warn('Speed limit reached', {
+        ip: req.ip,
+        userAgent: req.get('User-Agent'),
+        url: req.url,
+        method: req.method,
+        delay: res.get('Retry-After')
+      });
+    }
+    
+    originalEnd.call(this, chunk, encoding);
+  };
   
   next();
 };
 
-// Graceful shutdown handler
+// Graceful shutdown handler (no Redis cleanup needed for in-memory store)
 process.on('SIGINT', async () => {
-  if (redisClient && redisClient.isOpen) {
-    await redisClient.quit();
-    logger.info('Redis client disconnected on app termination');
-  }
+  logger.info('Graceful shutdown - in-memory rate limit store will be cleared');
 });
 
 module.exports = {

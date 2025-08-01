@@ -1,3 +1,13 @@
+# Build (unchanged)
+docker build -t iot-tracking-server .
+
+# Run (unchanged)
+docker run -p 3000:3000 --env-file .env iot-tracking-server
+
+# Run with logs volume
+docker run -p 3000:3000 --env-file .env -v ${PWD}/logs:/usr/src/app/logs --name iot-server iot-tracking-server
+
+
 # IoT Tracking Server
 
 A robust Node.js server for ESP32-based IoT tracking systems with SIM800L GSM and NEO6M GPS modules. Built with MongoDB Atlas for data storage and Docker for containerization.
