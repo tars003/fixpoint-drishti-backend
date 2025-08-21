@@ -154,10 +154,10 @@ const alertSchema = Joi.object({
     }),
   
   alertType: Joi.string()
-    .valid('vibration', 'tampering', 'low_battery', 'geofence', 'offline', 'temperature', 'custom')
+    .valid('vibration', 'tampering', 'low_battery', 'geofence', 'offline', 'temperature', 'custom', 'watchdog_triggered', 'gps_malfunction', 'obd2_malfunction', 'gyroscope_malfunction')
     .required()
     .messages({
-      'any.only': 'Alert type must be one of: vibration, tampering, low_battery, geofence, offline, temperature, custom',
+      'any.only': 'Alert type must be one of: vibration, tampering, low_battery, geofence, offline, temperature, custom, watchdog_triggered, gps_malfunction, obd2_malfunction, gyroscope_malfunction',
       'any.required': 'Alert type is required'
     }),
   
@@ -259,7 +259,7 @@ const deviceHistoryQuerySchema = Joi.object({
 const alertsQuerySchema = Joi.object({
   deviceId: Joi.string().alphanum().min(3).max(50).optional(),
   alertType: Joi.string()
-    .valid('vibration', 'tampering', 'low_battery', 'geofence', 'offline', 'temperature', 'custom')
+    .valid('vibration', 'tampering', 'low_battery', 'geofence', 'offline', 'temperature', 'custom', 'watchdog_triggered', 'gps_malfunction', 'obd2_malfunction', 'gyroscope_malfunction')
     .optional(),
   severity: Joi.string()
     .valid('low', 'medium', 'high', 'critical')
