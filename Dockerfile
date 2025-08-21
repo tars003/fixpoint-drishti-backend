@@ -43,8 +43,8 @@ ENV DB_NAME=iot_tracking
 
 # Production credentials hardcoded:
 ENV MONGODB_URI="mongodb+srv://ajay123:ajay123@transactions.puvlf.mongodb.net/iot_tracking"
-ENV JWT_SECRET="change_this_to_a_very_secure_random_string_32_chars_min"
-ENV API_KEY="change_this_secure_api_key_too"
+ENV JWT_SECRET="KMUFsIDTnFmyG3nMiGM6H9FNFUROf3wh7SmqJp-QV30"
+ENV API_KEY="askldhsKSADksdhfsd##$#$$^^"
 
 # Optional settings
 ENV JWT_EXPIRES_IN=7d
