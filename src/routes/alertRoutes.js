@@ -36,6 +36,10 @@ const {
   requireRoles
 } = require('../middleware/auth');
 
+const { 
+  decodeJwtPayload 
+} = require('../middleware/jwtPayload');
+
 // Apply common middleware to all routes
 router.use(securityHeaders);
 router.use(rateLimitLogger);
@@ -45,12 +49,13 @@ router.use(sanitizeStrings);
  * @route   POST /api/v1/alert
  * @desc    Create a new alert
  * @access  Private (API Key required)
- * @body    { deviceId, alertType, severity, title, message, latitude, longitude, data }
+ * @body    JWT token containing: { deviceId, alertType, severity, title, message, latitude, longitude, data }
  */
 router.post('/', 
   alertRateLimit,
   validateContentType,
   authenticateApiKey,
+  decodeJwtPayload,
   validateAlert,
   validateDeviceAccess,
   createAlert

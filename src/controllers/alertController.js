@@ -118,8 +118,8 @@ const getAlerts = asyncHandler(async (req, res) => {
   } = req.query;
   
   try {
-    // Build query
-    const query = {};
+    // Build query - exclude soft-deleted alerts by default
+    const query = { deletedAt: null };
     
     if (deviceId) query.deviceId = deviceId;
     if (alertType) query.alertType = alertType;
@@ -207,7 +207,7 @@ const getAlertById = asyncHandler(async (req, res) => {
   try {
     const alert = await Alert.findById(alertId).select('-__v').lean();
     
-    if (!alert) {
+    if (!alert || alert.deletedAt) {
       throw notFoundError('Alert');
     }
     
@@ -257,7 +257,7 @@ const resolveAlert = asyncHandler(async (req, res) => {
   try {
     const alert = await Alert.findById(alertId);
     
-    if (!alert) {
+    if (!alert || alert.deletedAt) {
       throw notFoundError('Alert');
     }
     
@@ -315,7 +315,7 @@ const acknowledgeAlert = asyncHandler(async (req, res) => {
   try {
     const alert = await Alert.findById(alertId);
     
-    if (!alert) {
+    if (!alert || alert.deletedAt) {
       throw notFoundError('Alert');
     }
     
@@ -365,8 +365,8 @@ const getAlertStats = asyncHandler(async (req, res) => {
   const { deviceId, startDate, endDate } = req.query;
   
   try {
-    // Build match query for aggregation
-    const match = {};
+    // Build match query for aggregation - exclude soft-deleted alerts
+    const match = { deletedAt: null };
     if (deviceId) match.deviceId = deviceId;
     if (startDate || endDate) {
       match.timestamp = {};
@@ -507,33 +507,64 @@ const deleteAlert = asyncHandler(async (req, res) => {
   try {
     const alert = await Alert.findById(alertId);
     
-    if (!alert) {
+    if (!alert || alert.deletedAt) {
       throw notFoundError('Alert');
     }
     
-    await Alert.findByIdAndDelete(alertId);
+    // SOFT DELETE - preserve data integrity
+    alert.deletedAt = new Date();
+    alert.deletedBy = req.apiKey?.type || 'unknown';
+    await alert.save();
     
-    logger.warn('Alert deleted', {
+    logger.warn('Alert soft deleted (archived)', {
       alertId,
       deviceId: alert.deviceId,
       alertType: alert.alertType,
-      deletedBy: req.apiKey?.type || 'unknown'
+      deletedBy: alert.deletedBy,
+      deletedAt: alert.deletedAt
     });
     
-    return successResponse(res, 'Alert deleted successfully', {
+    return successResponse(res, 'Alert archived successfully - data preserved', {
       alertId,
       deviceId: alert.deviceId,
-      alertType: alert.alertType
+      alertType: alert.alertType,
+      archivedAt: alert.deletedAt,
+      archivedBy: alert.deletedBy
     });
     
   } catch (error) {
-    logger.error('Error deleting alert:', {
+    logger.error('Error archiving alert:', {
       error: error.message,
       alertId
     });
     throw error;
   }
 });
+
+// Helper function for creating hardware error alerts with appropriate severity mapping
+const createHardwareErrorAlert = async (deviceId, errorType, errorData = {}, customMessage = null) => {
+  const severityMap = {
+    'watchdog_triggered': 'critical',    // System restart - critical
+    'obd2_malfunction': 'critical',      // Can't read vehicle data - critical
+    'gps_malfunction': 'high',           // Location tracking lost - high priority
+    'gyroscope_malfunction': 'high'      // Motion detection compromised - high priority
+  };
+  
+  const severity = severityMap[errorType] || 'medium';
+  const message = customMessage || `Hardware error detected: ${errorType.replace(/_/g, ' ')}`;
+  
+  return {
+    deviceId,
+    alertType: errorType,
+    severity,
+    message,
+    data: {
+      errorType,
+      timestamp: new Date().toISOString(),
+      ...errorData
+    }
+  };
+};
 
 module.exports = {
   createAlert,
@@ -542,5 +573,6 @@ module.exports = {
   resolveAlert,
   acknowledgeAlert,
   getAlertStats,
-  deleteAlert
+  deleteAlert,
+  createHardwareErrorAlert  // Export the helper for IoT devices to use
 };

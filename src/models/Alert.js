@@ -11,7 +11,14 @@ const alertSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Alert type is required'],
     enum: {
-      values: ['vibration', 'tampering', 'low_battery', 'geofence', 'offline', 'temperature', 'custom'],
+      values: [
+        'vibration', 'tampering', 'low_battery', 'geofence', 'offline', 'temperature', 'custom',
+        // Hardware error types
+        'watchdog_triggered',    // Critical system restart
+        'gps_malfunction',       // GPS module failure  
+        'obd2_malfunction',      // OBD2 communication failure
+        'gyroscope_malfunction'  // Gyroscope sensor failure
+      ],
       message: 'Invalid alert type'
     },
     index: true
@@ -105,6 +112,15 @@ const alertSchema = new mongoose.Schema({
       min: [1, 'Auto-resolve timeout must be at least 1 minute'],
       max: [1440, 'Auto-resolve timeout cannot exceed 24 hours']
     }
+  },
+  // Soft delete fields - preserve data integrity
+  deletedAt: {
+    type: Date,
+    default: null
+  },
+  deletedBy: {
+    type: String,
+    trim: true
   }
 }, {
   timestamps: true,
@@ -118,6 +134,8 @@ alertSchema.index({ alertType: 1, timestamp: -1 });
 alertSchema.index({ severity: 1, timestamp: -1 });
 alertSchema.index({ isResolved: 1, timestamp: -1 });
 alertSchema.index({ timestamp: -1 });
+// Index for soft delete - optimize queries excluding deleted alerts
+alertSchema.index({ deletedAt: 1 });
 
 // Geospatial index for location-based queries
 alertSchema.index({ location: '2dsphere' });
@@ -160,16 +178,21 @@ alertSchema.methods.acknowledge = function(acknowledgedBy = null) {
 
 // Static method to find unresolved alerts
 alertSchema.statics.findUnresolved = function(deviceId = null) {
-  const query = { isResolved: false };
+  const query = { isResolved: false, deletedAt: null };
   if (deviceId) query.deviceId = deviceId;
   return this.find(query).sort({ timestamp: -1 });
 };
 
 // Static method to find critical alerts
 alertSchema.statics.findCritical = function(deviceId = null) {
-  const query = { severity: 'critical', isResolved: false };
+  const query = { severity: 'critical', isResolved: false, deletedAt: null };
   if (deviceId) query.deviceId = deviceId;
   return this.find(query).sort({ timestamp: -1 });
+};
+
+// Static method to find active alerts (excluding soft-deleted)
+alertSchema.statics.findActive = function(query = {}) {
+  return this.find({ ...query, deletedAt: null });
 };
 
 // Static method to get alert statistics
@@ -238,7 +261,12 @@ alertSchema.pre('save', function(next) {
       geofence: 'Geofence Violation',
       offline: 'Device Offline',
       temperature: 'Temperature Alert',
-      custom: 'Custom Alert'
+      custom: 'Custom Alert',
+      // Hardware error titles
+      watchdog_triggered: 'Watchdog System Restart',
+      gps_malfunction: 'GPS Module Failure',
+      obd2_malfunction: 'OBD2 Port Failure',
+      gyroscope_malfunction: 'Gyroscope Sensor Failure'
     };
     this.title = titleMap[this.alertType] || 'Alert';
   }

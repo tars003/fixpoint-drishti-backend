@@ -34,6 +34,10 @@ const {
   securityHeaders
 } = require('../middleware/auth');
 
+const { 
+  decodeJwtPayload 
+} = require('../middleware/jwtPayload');
+
 // Apply common middleware to all routes
 router.use(securityHeaders);
 router.use(rateLimitLogger);
@@ -43,12 +47,13 @@ router.use(sanitizeStrings);
  * @route   POST /api/v1/device/update-data
  * @desc    Update device location and sensor data
  * @access  Private (API Key required)
- * @body    { deviceId, latitude, longitude, batteryVoltage, ... }
+ * @body    JWT token containing: { deviceId, latitude, longitude, batteryVoltage, ... }
  */
 router.post('/update-data', 
   deviceRateLimit,
   validateContentType,
   authenticateApiKey,
+  decodeJwtPayload,
   validateLocationData,
   validateDeviceAccess,
   updateDeviceData
