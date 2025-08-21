@@ -23,8 +23,9 @@ Content-Type: application/json
 X-API-Key: your_api_key_here
 ```
 
-### JWT Payload Encryption
-- **All data sent to `/update-data` and `/alert` endpoints must be JWT-encoded**
+### JWT Payload Encryption (MANDATORY)
+- **ALL data sent to `/update-data` and `/alert` endpoints MUST be JWT-encoded**
+- **No backward compatibility**: Standard JSON payloads are rejected
 - **Shared Secret**: Both device and server use the same secret key for JWT encoding/decoding
 - **Token Expiration**: JWT tokens expire in 5 minutes (prevents replay attacks)
 - **Algorithm**: HMAC SHA-256 (HS256)
@@ -281,7 +282,7 @@ The device must create JWT tokens with the following specifications:
 
 | Error | Description | Solution |
 |-------|-------------|----------|
-| **JWT token required** | No token in request body | Ensure JWT token is in `{"token": "..."}` format |
+| **JWT token required** | No token in request body or standard JSON sent | ALL payloads must be JWT-encoded - no raw JSON accepted |
 | **Invalid JWT token format** | Malformed JWT | Check JWT creation process and secret key |
 | **JWT token has expired** | Token older than 5 minutes | Generate new JWT token |
 | **JWT token not yet valid** | Token issued in future | Check ESP32 clock/NTP sync |
@@ -385,6 +386,8 @@ The following alert types are specifically for hardware malfunctions and system 
 
 ## 🚀 Testing Your Integration
 
+⚠️ **IMPORTANT**: All testing must use JWT-encoded payloads. Raw JSON requests will be rejected.
+
 ### 1. JWT Token Generation for Testing
 
 First, create JWT tokens for testing. You can use the server's utility function or online JWT generators.
@@ -451,7 +454,7 @@ Look for these status indicators in your device logs:
 - [ ] **Network credentials** configured correctly
 - [ ] **API key** provided and valid
 - [ ] **JWT secret key** matches server configuration
-- [ ] **JWT library** installed and functioning
+- [ ] **JWT library** installed and functioning (MANDATORY - no raw JSON accepted)
 - [ ] **Device ID** is unique and matches database entry
 - [ ] **Server URL** is correct (https/http)
 - [ ] **Data transmission interval** is appropriate for use case
