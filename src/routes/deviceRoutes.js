@@ -54,7 +54,7 @@ router.post('/update-data',
   validateContentType,
   authenticateApiKey,
   decodeJwtPayload,
-  validateLocationData,
+  // validateLocationData, // REMOVED: Latitude/longitude validation
   validateDeviceAccess,
   updateDeviceData
 );

@@ -14,16 +14,9 @@ const locationDataSchema = new mongoose.Schema({
       default: 'Point'
     },
     coordinates: {
-      type: [Number], // [longitude, latitude]
-      required: [true, 'Location coordinates are required'],
-      validate: {
-        validator: function(coords) {
-          return coords.length === 2 && 
-                 coords[0] >= -180 && coords[0] <= 180 && // longitude
-                 coords[1] >= -90 && coords[1] <= 90;    // latitude
-        },
-        message: 'Invalid coordinates. Longitude must be between -180 and 180, latitude between -90 and 90'
-      }
+      type: [Number], // [longitude, latitude]  
+      required: [true, 'Location coordinates are required']
+      // REMOVED: Coordinate range validation
     }
   },
   altitude: {

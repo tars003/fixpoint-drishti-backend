@@ -29,20 +29,14 @@ const locationDataSchema = Joi.object({
       'any.required': 'Device ID is required'
     }),
   
-  latitude: Joi.number().min(-90).max(90).required()
+  latitude: Joi.number().optional()
     .messages({
-      'number.min': 'Latitude must be between -90 and 90',
-      'number.max': 'Latitude must be between -90 and 90',
-      'number.base': 'Latitude must be a valid number',
-      'any.required': 'Latitude is required'
+      'number.base': 'Latitude must be a valid number'
     }),
   
-  longitude: Joi.number().min(-180).max(180).required()
+  longitude: Joi.number().optional()
     .messages({
-      'number.min': 'Longitude must be between -180 and 180',
-      'number.max': 'Longitude must be between -180 and 180',
-      'number.base': 'Longitude must be a valid number',
-      'any.required': 'Longitude is required'
+      'number.base': 'Longitude must be a valid number'
     }),
   
   altitude: Joi.number().min(-1000).max(50000).optional()
