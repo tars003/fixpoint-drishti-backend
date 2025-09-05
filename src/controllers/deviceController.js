@@ -27,8 +27,21 @@ const updateDeviceData = asyncHandler(async (req, res) => {
     accuracy,
     satellites,
     batteryPercentage,
-    digitalInputs,
-    analogInputs,
+    // OBD2 Data Fields
+    engineRpm,
+    vehicleSpeed,
+    engineLoad,
+    coolantTemperature,
+    fuelLevel,
+    throttlePosition,
+    intakeAirTemperature,
+    mafAirFlowRate,
+    fuelPressure,
+    engineRuntime,
+    distanceTraveled,
+    barometricPressure,
+    // Additional data for custom JSON
+    additionalData,
     signalStrength,
     temperature,
     humidity,
@@ -67,8 +80,21 @@ const updateDeviceData = asyncHandler(async (req, res) => {
       satellites,
       batteryVoltage,
       batteryPercentage,
-      digitalInputs: digitalInputs ? new Map(Object.entries(digitalInputs)) : undefined,
-      analogInputs: analogInputs ? new Map(Object.entries(analogInputs)) : undefined,
+      // OBD2 Data Fields
+      engineRpm,
+      vehicleSpeed,
+      engineLoad,
+      coolantTemperature,
+      fuelLevel,
+      throttlePosition,
+      intakeAirTemperature,
+      mafAirFlowRate,
+      fuelPressure,
+      engineRuntime,
+      distanceTraveled,
+      barometricPressure,
+      // Additional custom data
+      additionalData,
       signalStrength,
       temperature,
       humidity,
@@ -162,9 +188,7 @@ const getDeviceHistory = asyncHandler(async (req, res) => {
       coordinates: {
         latitude: item.location.coordinates[1],
         longitude: item.location.coordinates[0]
-      },
-      digitalInputs: item.digitalInputs ? Object.fromEntries(item.digitalInputs) : {},
-      analogInputs: item.analogInputs ? Object.fromEntries(item.analogInputs) : {}
+      }
     }));
     
     logger.info('Device history retrieved', {
@@ -248,9 +272,7 @@ const getCurrentLocation = asyncHandler(async (req, res) => {
       coordinates: {
         latitude: currentLocation.location.coordinates[1],
         longitude: currentLocation.location.coordinates[0]
-      },
-      digitalInputs: currentLocation.digitalInputs ? Object.fromEntries(currentLocation.digitalInputs) : {},
-      analogInputs: currentLocation.analogInputs ? Object.fromEntries(currentLocation.analogInputs) : {}
+      }
     };
     
     logger.info('Current location retrieved', {

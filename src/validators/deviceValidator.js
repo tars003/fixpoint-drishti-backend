@@ -89,24 +89,95 @@ const locationDataSchema = Joi.object({
       'number.max': 'Battery percentage cannot exceed 100%'
     }),
   
-  digitalInputs: Joi.object().pattern(
-    Joi.string(),
-    Joi.boolean()
-  ).optional()
+  // OBD2 Data Fields
+  engineRpm: Joi.number().min(0).max(10000).optional()
     .messages({
-      'object.base': 'Digital inputs must be an object',
-      'boolean.base': 'Digital input values must be boolean'
+      'number.base': 'Engine RPM must be a valid number',
+      'number.min': 'Engine RPM cannot be negative',
+      'number.max': 'Engine RPM cannot exceed 10000'
     }),
   
-  analogInputs: Joi.object().pattern(
-    Joi.string(),
-    Joi.number().min(0).max(1024)
-  ).optional()
+  vehicleSpeed: Joi.number().min(0).max(500).optional()
     .messages({
-      'object.base': 'Analog inputs must be an object',
-      'number.base': 'Analog input values must be numbers',
-      'number.min': 'Analog input values cannot be negative',
-      'number.max': 'Analog input values cannot exceed 1024'
+      'number.base': 'Vehicle speed must be a valid number',
+      'number.min': 'Vehicle speed cannot be negative',
+      'number.max': 'Vehicle speed cannot exceed 500 km/h'
+    }),
+  
+  engineLoad: Joi.number().min(0).max(100).optional()
+    .messages({
+      'number.base': 'Engine load must be a valid number',
+      'number.min': 'Engine load cannot be negative',
+      'number.max': 'Engine load cannot exceed 100%'
+    }),
+  
+  coolantTemperature: Joi.number().min(-40).max(215).optional()
+    .messages({
+      'number.base': 'Coolant temperature must be a valid number',
+      'number.min': 'Coolant temperature cannot be less than -40°C',
+      'number.max': 'Coolant temperature cannot exceed 215°C'
+    }),
+  
+  fuelLevel: Joi.number().min(0).max(100).optional()
+    .messages({
+      'number.base': 'Fuel level must be a valid number',
+      'number.min': 'Fuel level cannot be negative',
+      'number.max': 'Fuel level cannot exceed 100%'
+    }),
+  
+  throttlePosition: Joi.number().min(0).max(100).optional()
+    .messages({
+      'number.base': 'Throttle position must be a valid number',
+      'number.min': 'Throttle position cannot be negative',
+      'number.max': 'Throttle position cannot exceed 100%'
+    }),
+  
+  intakeAirTemperature: Joi.number().min(-40).max(215).optional()
+    .messages({
+      'number.base': 'Intake air temperature must be a valid number',
+      'number.min': 'Intake air temperature cannot be less than -40°C',
+      'number.max': 'Intake air temperature cannot exceed 215°C'
+    }),
+  
+  mafAirFlowRate: Joi.number().min(0).max(655.35).optional()
+    .messages({
+      'number.base': 'MAF air flow rate must be a valid number',
+      'number.min': 'MAF air flow rate cannot be negative',
+      'number.max': 'MAF air flow rate cannot exceed 655.35 g/s'
+    }),
+  
+  fuelPressure: Joi.number().min(0).max(765).optional()
+    .messages({
+      'number.base': 'Fuel pressure must be a valid number',
+      'number.min': 'Fuel pressure cannot be negative',
+      'number.max': 'Fuel pressure cannot exceed 765 kPa'
+    }),
+  
+  engineRuntime: Joi.number().min(0).max(4294967295).optional()
+    .messages({
+      'number.base': 'Engine runtime must be a valid number',
+      'number.min': 'Engine runtime cannot be negative',
+      'number.max': 'Engine runtime cannot exceed maximum value'
+    }),
+  
+  distanceTraveled: Joi.number().min(0).max(65535).optional()
+    .messages({
+      'number.base': 'Distance traveled must be a valid number',
+      'number.min': 'Distance traveled cannot be negative',
+      'number.max': 'Distance traveled cannot exceed 65535 km'
+    }),
+  
+  barometricPressure: Joi.number().min(0).max(255).optional()
+    .messages({
+      'number.base': 'Barometric pressure must be a valid number',
+      'number.min': 'Barometric pressure cannot be negative',
+      'number.max': 'Barometric pressure cannot exceed 255 kPa'
+    }),
+  
+  // Additional data field for any custom JSON data
+  additionalData: Joi.object().optional()
+    .messages({
+      'object.base': 'Additional data must be an object'
     }),
   
   signalStrength: Joi.number().min(-120).max(0).optional()

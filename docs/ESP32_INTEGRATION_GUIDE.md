@@ -76,9 +76,22 @@ The payload must be JWT-encoded before sending. The JWT token contains the follo
 - `signalStrength` (number): Signal strength in dBm (-120 to 0)
 - `temperature` (number): Temperature in Celsius (-50 to 100)
 - `humidity` (number): Humidity percentage (0-100)
-- `digitalInputs` (object): Digital pin states (key: string, value: boolean)
-- `analogInputs` (object): Analog sensor readings (key: string, value: 0-1024)
 - `timestamp` (string): ISO 8601 timestamp (optional, server uses current time if not provided)
+
+**OBD2 Vehicle Data Fields (Optional):**
+- `engineRpm` (number): Engine RPM (0-10000)
+- `vehicleSpeed` (number): Vehicle speed in km/h (0-500)
+- `engineLoad` (number): Engine load percentage (0-100)
+- `coolantTemperature` (number): Coolant temperature in Celsius (-40 to 215)
+- `fuelLevel` (number): Fuel level percentage (0-100)
+- `throttlePosition` (number): Throttle position percentage (0-100)
+- `intakeAirTemperature` (number): Intake air temperature in Celsius (-40 to 215)
+- `mafAirFlowRate` (number): Mass air flow rate in g/s (0-655.35)
+- `fuelPressure` (number): Fuel pressure in kPa (0-765)
+- `engineRuntime` (number): Engine runtime in seconds (0-4294967295)
+- `distanceTraveled` (number): Distance traveled since codes cleared in km (0-65535)
+- `barometricPressure` (number): Barometric pressure in kPa (0-255)
+- `additionalData` (object): Any custom JSON data for additional sensors or parameters
 
 #### JWT Token Structure
 **Raw Data (Before JWT Encoding):**
@@ -97,15 +110,22 @@ The payload must be JWT-encoded before sending. The JWT token contains the follo
   "signalStrength": -75,
   "temperature": 22.5,
   "humidity": 65,
-  "digitalInputs": {
-    "pin2": true,
-    "pin4": false,
-    "ignition": true
-  },
-  "analogInputs": {
-    "A0": 512,
-    "A1": 256,
-    "fuel_level": 800
+  "engineRpm": 2500,
+  "vehicleSpeed": 65,
+  "engineLoad": 45.2,
+  "coolantTemperature": 85,
+  "fuelLevel": 75,
+  "throttlePosition": 25.5,
+  "intakeAirTemperature": 30,
+  "mafAirFlowRate": 12.5,
+  "fuelPressure": 350,
+  "engineRuntime": 3600,
+  "distanceTraveled": 25000,
+  "barometricPressure": 101,
+  "additionalData": {
+    "customSensor1": 123,
+    "driverBehavior": "normal",
+    "maintenanceMode": false
   },
   "timestamp": "2025-01-15T12:30:00.000Z"
 }
@@ -325,7 +345,21 @@ The device must create JWT tokens with the following specifications:
 - **course**: 0-360 degrees
 - **temperature**: -50 to 100°C
 - **humidity**: 0-100%
-- **analogInputs**: Values 0-1024
+
+### OBD2 Vehicle Data
+- **engineRpm**: 0-10000 RPM
+- **vehicleSpeed**: 0-500 km/h
+- **engineLoad**: 0-100%
+- **coolantTemperature**: -40 to 215°C
+- **fuelLevel**: 0-100%
+- **throttlePosition**: 0-100%
+- **intakeAirTemperature**: -40 to 215°C
+- **mafAirFlowRate**: 0-655.35 g/s
+- **fuelPressure**: 0-765 kPa
+- **engineRuntime**: 0-4294967295 seconds
+- **distanceTraveled**: 0-65535 km
+- **barometricPressure**: 0-255 kPa
+- **additionalData**: Any valid JSON object
 
 ### Alert Data
 - **alertType**: `vibration`, `tampering`, `low_battery`, `geofence`, `offline`, `temperature`, `custom`, `watchdog_triggered`, `gps_malfunction`, `obd2_malfunction`, `gyroscope_malfunction`
@@ -397,13 +431,31 @@ First, create JWT tokens for testing. You can use the server's utility function 
 const jwt = require('jsonwebtoken');
 const JWT_SECRET = 'your_shared_jwt_secret_here'; // Same as device
 
-// Test data payload
+// Test data payload with OBD2 data
 const locationData = {
   deviceId: "DEVICE_001",
   latitude: 40.7128,
   longitude: -74.0060,
   batteryVoltage: 3.7,
-  batteryPercentage: 85
+  batteryPercentage: 85,
+  // OBD2 Vehicle Data
+  engineRpm: 2500,
+  vehicleSpeed: 65,
+  engineLoad: 45.2,
+  coolantTemperature: 85,
+  fuelLevel: 75,
+  throttlePosition: 25.5,
+  intakeAirTemperature: 30,
+  mafAirFlowRate: 12.5,
+  fuelPressure: 350,
+  engineRuntime: 3600,
+  distanceTraveled: 25000,
+  barometricPressure: 101,
+  // Additional custom data
+  additionalData: {
+    customSensor1: 123,
+    driverBehavior: "normal"
+  }
 };
 
 // Create JWT token (expires in 5 minutes)

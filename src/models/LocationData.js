@@ -54,19 +54,71 @@ const locationDataSchema = new mongoose.Schema({
     min: [0, 'Battery percentage cannot be negative'],
     max: [100, 'Battery percentage cannot exceed 100%']
   },
-  digitalInputs: {
-    type: Map,
-    of: Boolean,
-    default: new Map()
+  // OBD2 Data Fields
+  engineRpm: {
+    type: Number,
+    min: [0, 'Engine RPM cannot be negative'],
+    max: [10000, 'Engine RPM cannot exceed 10000']
   },
-  analogInputs: {
-    type: Map,
-    of: {
-      type: Number,
-      min: [0, 'Analog input value cannot be negative'],
-      max: [1024, 'Analog input value cannot exceed 1024']
-    },
-    default: new Map()
+  vehicleSpeed: {
+    type: Number,
+    min: [0, 'Vehicle speed cannot be negative'],
+    max: [500, 'Vehicle speed cannot exceed 500 km/h']
+  },
+  engineLoad: {
+    type: Number,
+    min: [0, 'Engine load cannot be negative'],
+    max: [100, 'Engine load cannot exceed 100%']
+  },
+  coolantTemperature: {
+    type: Number,
+    min: [-40, 'Coolant temperature cannot be less than -40°C'],
+    max: [215, 'Coolant temperature cannot exceed 215°C']
+  },
+  fuelLevel: {
+    type: Number,
+    min: [0, 'Fuel level cannot be negative'],
+    max: [100, 'Fuel level cannot exceed 100%']
+  },
+  throttlePosition: {
+    type: Number,
+    min: [0, 'Throttle position cannot be negative'],
+    max: [100, 'Throttle position cannot exceed 100%']
+  },
+  intakeAirTemperature: {
+    type: Number,
+    min: [-40, 'Intake air temperature cannot be less than -40°C'],
+    max: [215, 'Intake air temperature cannot exceed 215°C']
+  },
+  mafAirFlowRate: {
+    type: Number,
+    min: [0, 'MAF air flow rate cannot be negative'],
+    max: [655.35, 'MAF air flow rate cannot exceed 655.35 g/s']
+  },
+  fuelPressure: {
+    type: Number,
+    min: [0, 'Fuel pressure cannot be negative'],
+    max: [765, 'Fuel pressure cannot exceed 765 kPa']
+  },
+  engineRuntime: {
+    type: Number,
+    min: [0, 'Engine runtime cannot be negative'],
+    max: [4294967295, 'Engine runtime cannot exceed maximum value']
+  },
+  distanceTraveled: {
+    type: Number,
+    min: [0, 'Distance traveled cannot be negative'],
+    max: [65535, 'Distance traveled cannot exceed 65535 km']
+  },
+  barometricPressure: {
+    type: Number,
+    min: [0, 'Barometric pressure cannot be negative'],
+    max: [255, 'Barometric pressure cannot exceed 255 kPa']
+  },
+  // Additional data field for any custom JSON data
+  additionalData: {
+    type: mongoose.Schema.Types.Mixed,
+    default: {}
   },
   signalStrength: {
     type: Number,

@@ -331,3 +331,8 @@
 {"level":"info","message":"Redis connection established for rate limiting","service":"iot-tracking-server","timestamp":"2025-08-01T05:31:23.727Z"}
 {"level":"info","message":"MongoDB Connected: transactions-shard-00-00.puvlf.mongodb.net","service":"iot-tracking-server","timestamp":"2025-08-01T05:31:24.382Z"}
 {"level":"info","message":"Received SIGINT. Starting graceful shutdown...","service":"iot-tracking-server","timestamp":"2025-08-01T05:31:42.248Z"}
+{"level":"info","message":"Using in-memory store for rate limiting (Redis disabled)","service":"iot-tracking-server","timestamp":"2025-09-05T13:48:04.251Z"}
+{"apiVersion":"v1","environment":"development","level":"info","message":"🚀 IoT Tracking Server started","port":3000,"processId":17360,"service":"iot-tracking-server","timestamp":"2025-09-05T13:48:06.011Z"}
+{"apiVersion":"v1","corsOrigins":"*","level":"info","logLevel":"info","message":"Server configuration:","mongoConnected":false,"nodeEnv":"development","port":3000,"service":"iot-tracking-server","timestamp":"2025-09-05T13:48:06.014Z"}
+{"level":"info","message":"MongoDB Connected: transactions-shard-00-02.puvlf.mongodb.net","service":"iot-tracking-server","timestamp":"2025-09-05T13:48:06.424Z"}
+{"level":"info","message":"Graceful shutdown - in-memory rate limit store will be cleared","service":"iot-tracking-server","timestamp":"2025-09-05T13:48:18.476Z"}
