@@ -20,100 +20,63 @@ const locationDataSchema = new mongoose.Schema({
     }
   },
   altitude: {
-    type: Number,
-    min: [-1000, 'Altitude cannot be less than -1000 meters'],
-    max: [50000, 'Altitude cannot exceed 50000 meters']
+    type: Number
   },
   speed: {
-    type: Number,
-    min: [0, 'Speed cannot be negative'],
-    max: [1000, 'Speed cannot exceed 1000 km/h']
+    type: Number
   },
   course: {
-    type: Number,
-    min: [0, 'Course must be between 0 and 360 degrees'],
-    max: [360, 'Course must be between 0 and 360 degrees']
+    type: Number
   },
   accuracy: {
-    type: Number,
-    min: [0, 'Accuracy cannot be negative']
+    type: Number
   },
   satellites: {
-    type: Number,
-    min: [0, 'Number of satellites cannot be negative'],
-    max: [50, 'Number of satellites cannot exceed 50']
+    type: Number
   },
   batteryVoltage: {
     type: Number,
-    required: [true, 'Battery voltage is required'],
-    min: [0, 'Battery voltage cannot be negative'],
-    max: [50, 'Battery voltage cannot exceed 50V']
+    required: [true, 'Battery voltage is required']
   },
   batteryPercentage: {
-    type: Number,
-    min: [0, 'Battery percentage cannot be negative'],
-    max: [100, 'Battery percentage cannot exceed 100%']
+    type: Number
   },
   // OBD2 Data Fields
   engineRpm: {
-    type: Number,
-    min: [0, 'Engine RPM cannot be negative'],
-    max: [10000, 'Engine RPM cannot exceed 10000']
+    type: Number
   },
   vehicleSpeed: {
-    type: Number,
-    min: [0, 'Vehicle speed cannot be negative'],
-    max: [500, 'Vehicle speed cannot exceed 500 km/h']
+    type: Number
   },
   engineLoad: {
-    type: Number,
-    min: [0, 'Engine load cannot be negative'],
-    max: [100, 'Engine load cannot exceed 100%']
+    type: Number
   },
   coolantTemperature: {
-    type: Number,
-    min: [-40, 'Coolant temperature cannot be less than -40°C'],
-    max: [215, 'Coolant temperature cannot exceed 215°C']
+    type: Number
   },
   fuelLevel: {
-    type: Number,
-    min: [0, 'Fuel level cannot be negative'],
-    max: [100, 'Fuel level cannot exceed 100%']
+    type: Number
   },
   throttlePosition: {
-    type: Number,
-    min: [0, 'Throttle position cannot be negative'],
-    max: [100, 'Throttle position cannot exceed 100%']
+    type: Number
   },
   intakeAirTemperature: {
-    type: Number,
-    min: [-40, 'Intake air temperature cannot be less than -40°C'],
-    max: [215, 'Intake air temperature cannot exceed 215°C']
+    type: Number
   },
   mafAirFlowRate: {
-    type: Number,
-    min: [0, 'MAF air flow rate cannot be negative'],
-    max: [655.35, 'MAF air flow rate cannot exceed 655.35 g/s']
+    type: Number
   },
   fuelPressure: {
-    type: Number,
-    min: [0, 'Fuel pressure cannot be negative'],
-    max: [765, 'Fuel pressure cannot exceed 765 kPa']
+    type: Number
   },
   engineRuntime: {
-    type: Number,
-    min: [0, 'Engine runtime cannot be negative'],
-    max: [4294967295, 'Engine runtime cannot exceed maximum value']
+    type: Number
   },
   distanceTraveled: {
-    type: Number,
-    min: [0, 'Distance traveled cannot be negative'],
-    max: [65535, 'Distance traveled cannot exceed 65535 km']
+    type: Number
   },
   barometricPressure: {
-    type: Number,
-    min: [0, 'Barometric pressure cannot be negative'],
-    max: [255, 'Barometric pressure cannot exceed 255 kPa']
+    type: Number
   },
   // Additional data field for any custom JSON data
   additionalData: {
@@ -121,19 +84,13 @@ const locationDataSchema = new mongoose.Schema({
     default: {}
   },
   signalStrength: {
-    type: Number,
-    min: [-120, 'Signal strength cannot be less than -120 dBm'],
-    max: [0, 'Signal strength cannot exceed 0 dBm']
+    type: Number
   },
   temperature: {
-    type: Number,
-    min: [-50, 'Temperature cannot be less than -50°C'],
-    max: [100, 'Temperature cannot exceed 100°C']
+    type: Number
   },
   humidity: {
-    type: Number,
-    min: [0, 'Humidity cannot be negative'],
-    max: [100, 'Humidity cannot exceed 100%']
+    type: Number
   },
   timestamp: {
     type: Date,
