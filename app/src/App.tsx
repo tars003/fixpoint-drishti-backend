@@ -6,8 +6,10 @@ import AppLayout from './layouts/AppLayout';
 import LoginPage from './pages/auth/LoginPage';
 import DashboardPage from './pages/dashboard/DashboardPage';
 import DevicesPage from './pages/devices/DevicesPage';
+import AddDevicePage from './pages/devices/AddDevicePage';
 import DeviceDetailPage from './pages/devices/DeviceDetailPage';
 import DeviceMapPage from './pages/devices/DeviceMapPage';
+import TyreHealthPage from './pages/tyre-health/TyreHealthPage';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import './App.css';
 
@@ -83,6 +85,17 @@ function App() {
             />
             
             <Route 
+              path="/devices/add" 
+              element={
+                <ProtectedRoute>
+                  <AppLayout>
+                    <AddDevicePage />
+                  </AppLayout>
+                </ProtectedRoute>
+              } 
+            />
+            
+            <Route 
               path="/device/:deviceId" 
               element={
                 <ProtectedRoute>
@@ -98,6 +111,17 @@ function App() {
               element={
                 <ProtectedRoute>
                   <DeviceMapPage />
+                </ProtectedRoute>
+              } 
+            />
+            
+            <Route 
+              path="/tyre-health" 
+              element={
+                <ProtectedRoute>
+                  <AppLayout>
+                    <TyreHealthPage />
+                  </AppLayout>
                 </ProtectedRoute>
               } 
             />

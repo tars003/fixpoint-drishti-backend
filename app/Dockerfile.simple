@@ -1,0 +1,28 @@
+# Ultra-simple React deployment with serve package
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies including serve package
+RUN npm ci && npm install -g serve
+
+# Copy source code
+COPY . .
+
+# Build the React app
+RUN npm run build
+
+# Verify build
+RUN ls -la build/ && echo "✅ Build successful!"
+
+# Clean up unnecessary files
+RUN rm -rf src public docs node_modules
+
+# Expose port
+EXPOSE 5000
+
+# Use serve package to serve static files
+CMD ["serve", "-s", "build", "-p", "5000"]

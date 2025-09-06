@@ -1,0 +1,24 @@
+# Simple, production-ready React app Dockerfile
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Copy package files and install dependencies
+COPY package*.json ./
+RUN npm ci
+
+# Copy source code and build React app
+COPY . .
+RUN npm run build
+
+# Verify build was successful
+RUN ls -la build/ && echo "Build directory contents:" && ls -la build/
+
+# Remove development dependencies and source files to reduce image size
+RUN rm -rf src public node_modules && npm ci --only=production
+
+# Expose port
+EXPOSE 5000
+
+# Use simple static file server
+CMD ["node", "serve.js"]

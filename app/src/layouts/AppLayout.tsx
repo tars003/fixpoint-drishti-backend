@@ -15,7 +15,8 @@ import {
   Menu,
   X,
   PanelLeftClose,
-  PanelLeftOpen
+  PanelLeftOpen,
+  Gauge
 } from 'lucide-react';
 
 interface AppLayoutProps {
@@ -99,6 +100,12 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
       href: '/devices',
       icon: Car,
       current: location.pathname.startsWith('/device'),
+    },
+    {
+      name: 'Tyre Health',
+      href: '/tyre-health',
+      icon: Gauge,
+      current: location.pathname === '/tyre-health',
     },
     {
       name: 'Analytics',
