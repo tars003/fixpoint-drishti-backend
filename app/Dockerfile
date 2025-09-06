@@ -14,7 +14,7 @@ RUN npm ci
 COPY . .
 
 # Build the React app
-RUN npm run build
+# RUN npm run build
 
 # Set production environment
 ENV NODE_ENV=production
@@ -23,4 +23,4 @@ ENV NODE_ENV=production
 EXPOSE 5000
 
 # Start the server
-CMD ["node", "server.js"]
+CMD ["npm", "run", "dev"]
