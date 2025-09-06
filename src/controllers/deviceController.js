@@ -386,9 +386,9 @@ const getAllDevices = asyncHandler(async (req, res) => {
     // Filter by computed status if requested
     if (status) {
       devices = devices.filter(device => {
-        const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
+        const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
         const deviceStatus = !device.isActive ? 'inactive' : 
-                           device.lastSeen > fiveMinutesAgo ? 'online' : 'offline';
+                           device.lastSeen > tenMinutesAgo ? 'online' : 'offline';
         return deviceStatus === status;
       });
     }
@@ -406,7 +406,7 @@ const getAllDevices = asyncHandler(async (req, res) => {
         return {
           ...device,
           status: !device.isActive ? 'inactive' : 
-                  device.lastSeen > new Date(Date.now() - 5 * 60 * 1000) ? 'online' : 'offline',
+                  device.lastSeen > new Date(Date.now() - 10 * 60 * 1000) ? 'online' : 'offline',
           latestLocation: latestLocation ? {
             coordinates: {
               latitude: latestLocation.location.coordinates[1],
