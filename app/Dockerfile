@@ -10,14 +10,8 @@ COPY package*.json ./
 # Install dependencies
 RUN npm ci
 
-# Copy React app source code
-COPY public/ ./public/
-COPY src/ ./src/
-COPY components.json ./
-COPY postcss.config.js ./
-COPY tailwind.config.js ./
-COPY tsconfig.json ./
-COPY server.js ./
+# Copy all source code
+COPY . .
 
 # Build the React app
 RUN npm run build
