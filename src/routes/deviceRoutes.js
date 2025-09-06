@@ -22,14 +22,10 @@ const {
   validateContentType
 } = require('../middleware/validation');
 
-const { 
-  deviceRateLimit, 
-  generalRateLimit,
-  rateLimitLogger 
-} = require('../middleware/rateLimiter');
 
 const { 
   authenticateApiKey,
+  authenticateToken,
   validateDeviceAccess,
   securityHeaders
 } = require('../middleware/auth');
@@ -40,7 +36,6 @@ const {
 
 // Apply common middleware to all routes
 router.use(securityHeaders);
-router.use(rateLimitLogger);
 router.use(sanitizeStrings);
 
 /**
@@ -50,7 +45,6 @@ router.use(sanitizeStrings);
  * @body    JWT token containing: { deviceId, latitude, longitude, batteryVoltage, ... }
  */
 router.post('/update-data', 
-  deviceRateLimit,
   validateContentType,
   authenticateApiKey,
   decodeJwtPayload,
@@ -66,7 +60,6 @@ router.post('/update-data',
  * @body    { deviceId, name, description, batteryThreshold, alertSettings, hardware }
  */
 router.post('/register',
-  generalRateLimit,
   validateContentType,
   authenticateApiKey,
   validateDevice,
@@ -81,10 +74,49 @@ router.post('/register',
  * @query   ?isActive=true&status=online&limit=50&page=1
  */
 router.get('/list',
-  generalRateLimit,
   authenticateApiKey,
   validatePagination,
   getAllDevices
+);
+
+/**
+ * @route   GET /api/v1/device/web-list
+ * @desc    Get all devices for web interface (no user filtering for now)
+ * @access  Private (JWT required)
+ * @query   ?isActive=true&status=online&limit=50&page=1
+ */
+router.get('/web-list',
+  authenticateToken,
+  validatePagination,
+  getAllDevices
+);
+
+/**
+ * @route   GET /api/v1/device/:deviceId/web-history
+ * @desc    Get device history for web interface (JWT auth)
+ * @access  Private (JWT required)
+ * @params  deviceId
+ * @query   ?startDate=2024-01-01&endDate=2024-01-31&limit=100&page=1
+ */
+router.get('/:deviceId/web-history',
+  authenticateToken,
+  validateDeviceId,
+  validateDeviceHistoryQuery,
+  validateDateRange,
+  validatePagination,
+  getDeviceHistory
+);
+
+/**
+ * @route   GET /api/v1/device/:deviceId/web-current
+ * @desc    Get device current location for web interface (JWT auth)
+ * @access  Private (JWT required)
+ * @params  deviceId
+ */
+router.get('/:deviceId/web-current',
+  authenticateToken,
+  validateDeviceId,
+  getCurrentLocation
 );
 
 /**
@@ -95,7 +127,6 @@ router.get('/list',
  * @query   ?startDate=2024-01-01&endDate=2024-01-31&limit=100&page=1
  */
 router.get('/:deviceId/history',
-  generalRateLimit,
   authenticateApiKey,
   validateDeviceId,
   validateDeviceHistoryQuery,
@@ -112,7 +143,6 @@ router.get('/:deviceId/history',
  * @params  deviceId
  */
 router.get('/:deviceId/current',
-  generalRateLimit,
   authenticateApiKey,
   validateDeviceId,
   validateDeviceAccess,
@@ -126,7 +156,6 @@ router.get('/:deviceId/current',
  * @params  deviceId
  */
 router.get('/:deviceId',
-  generalRateLimit,
   authenticateApiKey,
   validateDeviceId,
   validateDeviceAccess,

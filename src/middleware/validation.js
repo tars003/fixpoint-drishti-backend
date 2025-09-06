@@ -294,6 +294,105 @@ const validateBodySize = (maxSize = '10mb') => {
   };
 };
 
+/**
+ * Validates phone number in request body
+ */
+const validatePhoneNumber = (req, res, next) => {
+  const { phoneNumber } = req.body;
+  
+  if (!phoneNumber) {
+    return badRequestResponse(res, 'Phone number is required');
+  }
+  
+  const phoneRegex = /^[+]?[1-9]\d{1,14}$/;
+  if (!phoneRegex.test(phoneNumber)) {
+    return badRequestResponse(res, 'Please enter a valid phone number');
+  }
+  
+  req.body.phoneNumber = phoneNumber.trim();
+  next();
+};
+
+/**
+ * Validates OTP verification request
+ */
+const validateOTP = (req, res, next) => {
+  const { phoneNumber, otp, purpose = 'login' } = req.body;
+  
+  if (!phoneNumber) {
+    return badRequestResponse(res, 'Phone number is required');
+  }
+  
+  if (!otp) {
+    return badRequestResponse(res, 'OTP is required');
+  }
+  
+  const phoneRegex = /^[+]?[1-9]\d{1,14}$/;
+  if (!phoneRegex.test(phoneNumber)) {
+    return badRequestResponse(res, 'Please enter a valid phone number');
+  }
+  
+  const otpRegex = /^\d{6}$/;
+  if (!otpRegex.test(otp)) {
+    return badRequestResponse(res, 'OTP must be 6 digits');
+  }
+  
+  const validPurposes = ['login', 'registration', 'password_reset'];
+  if (!validPurposes.includes(purpose)) {
+    return badRequestResponse(res, 'Invalid purpose');
+  }
+  
+  req.body.phoneNumber = phoneNumber.trim();
+  req.body.otp = otp.trim();
+  req.body.purpose = purpose;
+  
+  next();
+};
+
+/**
+ * Validates profile update request
+ */
+const validateProfileUpdate = (req, res, next) => {
+  const { name, email, preferences } = req.body;
+  
+  if (name !== undefined) {
+    if (typeof name !== 'string' || name.length > 100) {
+      return badRequestResponse(res, 'Name must be a string with maximum 100 characters');
+    }
+    req.body.name = name.trim();
+  }
+  
+  if (email !== undefined) {
+    if (typeof email !== 'string') {
+      return badRequestResponse(res, 'Email must be a string');
+    }
+    // More robust email validation
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(email)) {
+      return badRequestResponse(res, 'Please enter a valid email address');
+    }
+    req.body.email = email.trim().toLowerCase();
+  }
+  
+  if (preferences !== undefined) {
+    if (typeof preferences !== 'object') {
+      return badRequestResponse(res, 'Preferences must be an object');
+    }
+    
+    if (preferences.units) {
+      const { distance, temperature } = preferences.units;
+      if (distance && !['km', 'miles'].includes(distance)) {
+        return badRequestResponse(res, 'Distance unit must be km or miles');
+      }
+      if (temperature && !['celsius', 'fahrenheit'].includes(temperature)) {
+        return badRequestResponse(res, 'Temperature unit must be celsius or fahrenheit');
+      }
+    }
+  }
+  
+  next();
+};
+
 module.exports = {
   createValidationMiddleware,
   validateLocationData,
@@ -307,5 +406,8 @@ module.exports = {
   validateCoordinates,
   sanitizeStrings,
   validateContentType,
-  validateBodySize
+  validateBodySize,
+  validatePhoneNumber,
+  validateOTP,
+  validateProfileUpdate
 };

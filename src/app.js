@@ -13,9 +13,9 @@ const { apiResponse } = require('./utils/apiResponse');
 // Import routes
 const deviceRoutes = require('./routes/deviceRoutes');
 const alertRoutes = require('./routes/alertRoutes');
+const authRoutes = require('./routes/authRoutes');
 
 // Import middleware
-const { generalRateLimit, speedLimiter } = require('./middleware/rateLimiter');
 const { errorHandler, notFoundHandler } = require('./middleware/errorHandler');
 
 // Create Express application
@@ -121,9 +121,7 @@ app.use((req, res, next) => {
   next();
 });
 
-// Rate limiting middleware
-app.use(generalRateLimit);
-app.use(speedLimiter);
+// Rate limiting middleware removed
 
 // Health check endpoint (before API routes)
 app.get('/health', (req, res) => {
@@ -151,6 +149,7 @@ app.get(`/api/${config.API_VERSION}/status`, (req, res) => {
     version: config.API_VERSION,
     timestamp: new Date().toISOString(),
     endpoints: {
+      auth: `/api/${config.API_VERSION}/auth`,
       devices: `/api/${config.API_VERSION}/device`,
       alerts: `/api/${config.API_VERSION}/alert`
     },
@@ -159,6 +158,7 @@ app.get(`/api/${config.API_VERSION}/status`, (req, res) => {
 });
 
 // API Routes
+app.use(`/api/${config.API_VERSION}/auth`, authRoutes);
 app.use(`/api/${config.API_VERSION}/device`, deviceRoutes);
 app.use(`/api/${config.API_VERSION}/alert`, alertRoutes);
 

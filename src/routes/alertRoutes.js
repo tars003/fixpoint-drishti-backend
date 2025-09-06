@@ -22,15 +22,10 @@ const {
   validateContentType
 } = require('../middleware/validation');
 
-const { 
-  alertRateLimit, 
-  generalRateLimit,
-  strictRateLimit,
-  rateLimitLogger 
-} = require('../middleware/rateLimiter');
 
 const { 
   authenticateApiKey,
+  authenticateToken,
   validateDeviceAccess,
   securityHeaders,
   requireRoles
@@ -42,7 +37,6 @@ const {
 
 // Apply common middleware to all routes
 router.use(securityHeaders);
-router.use(rateLimitLogger);
 router.use(sanitizeStrings);
 
 /**
@@ -52,7 +46,6 @@ router.use(sanitizeStrings);
  * @body    JWT token containing: { deviceId, alertType, severity, title, message, latitude, longitude, data }
  */
 router.post('/', 
-  alertRateLimit,
   validateContentType,
   authenticateApiKey,
   decodeJwtPayload,
@@ -68,8 +61,21 @@ router.post('/',
  * @query   ?deviceId=DEV001&alertType=low_battery&severity=high&isResolved=false&startDate=2024-01-01&endDate=2024-01-31&limit=50&page=1
  */
 router.get('/',
-  generalRateLimit,
   authenticateApiKey,
+  validateAlertsQuery,
+  validateDateRange,
+  validatePagination,
+  getAlerts
+);
+
+/**
+ * @route   GET /api/v1/alert/web
+ * @desc    Get alerts for web interface (JWT auth)
+ * @access  Private (JWT required)
+ * @query   ?deviceId=DEV001&alertType=low_battery&severity=high&isResolved=false&startDate=2024-01-01&endDate=2024-01-31&limit=50&page=1
+ */
+router.get('/web',
+  authenticateToken,
   validateAlertsQuery,
   validateDateRange,
   validatePagination,
@@ -83,7 +89,6 @@ router.get('/',
  * @query   ?deviceId=DEV001&startDate=2024-01-01&endDate=2024-01-31
  */
 router.get('/stats',
-  generalRateLimit,
   authenticateApiKey,
   validateDateRange,
   getAlertStats
@@ -96,7 +101,6 @@ router.get('/stats',
  * @params  alertId
  */
 router.get('/:alertId',
-  generalRateLimit,
   authenticateApiKey,
   getAlertById
 );
@@ -109,7 +113,6 @@ router.get('/:alertId',
  * @body    { resolvedBy?, resolutionNotes? }
  */
 router.put('/:alertId/resolve',
-  strictRateLimit,
   validateContentType,
   authenticateApiKey,
   resolveAlert
@@ -123,7 +126,6 @@ router.put('/:alertId/resolve',
  * @body    { acknowledgedBy? }
  */
 router.put('/:alertId/acknowledge',
-  strictRateLimit,
   validateContentType,
   authenticateApiKey,
   acknowledgeAlert
@@ -136,7 +138,6 @@ router.put('/:alertId/acknowledge',
  * @params  alertId
  */
 router.delete('/:alertId',
-  strictRateLimit,
   authenticateApiKey,
   // Only allow master API key to delete alerts
   (req, res, next) => {

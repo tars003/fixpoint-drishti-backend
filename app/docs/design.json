@@ -1,0 +1,180 @@
+{
+  "designSystem": {
+    "inspiration": "Vercel Dashboard - Modern, clean, minimalist design with excellent information architecture",
+    "colorPalette": {
+      "background": "Clean white/gray backgrounds with subtle borders",
+      "accent": "Black primary with hover states",
+      "muted": "Gray-500 for secondary text",
+      "success": "Green accents for positive states",
+      "destructive": "Red for errors/warnings"
+    },
+    "typography": {
+      "hierarchy": "Clear font weight distinctions - bold headers, medium labels, normal body text",
+      "spacing": "Generous whitespace, well-balanced line heights"
+    },
+    "components": {
+      "cards": "Subtle shadows, rounded corners, minimal borders",
+      "buttons": "Clean, minimal design with clear hover states",
+      "navigation": "Horizontal tabs with clear active states"
+    }
+  },
+  "layoutStructure": {
+    "header": {
+      "design": "Clean header with logo, project selector, search, and user menu",
+      "elements": [
+        "Logo/brand",
+        "Project breadcrumb navigation", 
+        "Global search (Find... F)",
+        "Notifications bell",
+        "User avatar menu"
+      ]
+    },
+    "navigation": {
+      "type": "Horizontal tabs below header",
+      "style": "Clean tab design with underline active state",
+      "items": [
+        "Overview (main dashboard)",
+        "Cost Reports", 
+        "Analytics (future)",
+        "Usage (future)",
+        "Settings (future)"
+      ]
+    },
+    "mainContent": {
+      "layout": "Grid-based dashboard with cards",
+      "sections": [
+        "Page header with title and actions",
+        "Key metrics summary (3-4 cards across)",
+        "Main dashboard grid (2-3 columns)",
+        "Secondary information panels"
+      ]
+    }
+  },
+  "dashboardModules": {
+    "overview": {
+      "purpose": "Landing page with module selection grid",
+      "layout": "Grid of available dashboards/modules",
+      "cards": [
+        {
+          "title": "Azure OpenAI Cost Tracking",
+          "description": "Monitor and analyze Azure OpenAI usage costs",
+          "icon": "DollarSign or TrendingUp", 
+          "status": "Available",
+          "href": "/cost-reports"
+        },
+        {
+          "title": "Usage Analytics", 
+          "description": "Detailed usage patterns and trends",
+          "icon": "BarChart3",
+          "status": "Coming Soon",
+          "href": null
+        },
+        {
+          "title": "Resource Monitor",
+          "description": "Real-time resource monitoring", 
+          "icon": "Activity",
+          "status": "Coming Soon", 
+          "href": null
+        },
+        {
+          "title": "Team Settings",
+          "description": "Configure team and project settings",
+          "icon": "Settings",
+          "status": "Coming Soon",
+          "href": null
+        }
+      ]
+    },
+    "costReports": {
+      "purpose": "Main cost analysis dashboard",
+      "sections": [
+        {
+          "type": "header",
+          "content": "Cost Reports with date range selector and generate button"
+        },
+        {
+          "type": "metricsRow", 
+          "cards": [
+            "Total Cost (with currency symbol)",
+            "Products Used (count of AI models)",  
+            "Report Period (date range)",
+            "Last Updated (timestamp)"
+          ]
+        },
+        {
+          "type": "chartSection",
+          "content": "Cost trend chart over time (if multiple reports)"
+        },
+        {
+          "type": "dataTable",
+          "content": "Detailed breakdown by product with costs and percentages"
+        }
+      ]
+    }
+  },
+  "componentSpecs": {
+    "dateRangePicker": {
+      "type": "Popover with Calendar component",
+      "trigger": "Button with calendar icon and date range text",
+      "calendar": "shadcn/ui Calendar with range selection",
+      "format": "MMM dd, yyyy format display"
+    },
+    "metricCards": {
+      "layout": "Grid of 3-4 cards per row",
+      "design": "Clean cards with icon, large number, and description",
+      "elements": [
+        "Icon (top-left)",
+        "Large metric value (center)",
+        "Description text (bottom)",
+        "Optional progress bar or trend indicator"
+      ]
+    },
+    "dataTable": {
+      "design": "Clean table with alternating row colors",
+      "features": [
+        "Sortable columns",
+        "Progress bars for percentages",
+        "Currency formatting",
+        "Responsive design"
+      ]
+    },
+    "progressBars": {
+      "style": "Subtle, rounded progress bars like Vercel's usage indicators",
+      "colors": "Muted gray background with colored fill"
+    },
+    "loadingStates": {
+      "skeleton": "Skeleton loading for cards and tables",
+      "spinner": "Clean spinner with descriptive text",
+      "progress": "Step-by-step progress indicator for long operations"
+    },
+    "emptyStates": {
+      "design": "Centered content with icon, heading, and description",
+      "actions": "Clear call-to-action button"
+    }
+  },
+  "interactionPatterns": {
+    "navigation": {
+      "type": "Tab-based navigation with clear active states",
+      "behavior": "Smooth transitions between sections"
+    },
+    "actions": {
+      "primary": "Prominent buttons for main actions (Generate Report)",
+      "secondary": "Subtle buttons for secondary actions"
+    },
+    "feedback": {
+      "success": "Green success alerts with checkmark",
+      "error": "Red error alerts with clear messaging", 
+      "loading": "Progressive loading states with descriptions"
+    }
+  },
+  "responsiveDesign": {
+    "breakpoints": "Mobile-first approach with tablet and desktop optimizations",
+    "gridSystem": "CSS Grid with responsive columns",
+    "navigation": "Collapsible navigation on mobile"
+  },
+  "accessibility": {
+    "colorContrast": "WCAG AA compliant contrast ratios",
+    "keyboardNavigation": "Full keyboard navigation support",
+    "screenReaders": "Proper ARIA labels and semantic HTML"
+  }
+}
